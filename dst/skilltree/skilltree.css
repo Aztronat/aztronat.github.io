@@ -1,0 +1,125 @@
+body {
+    margin: 0;
+    background-color: #2c2521;
+    background-image: url('images/background.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    font-family: 'IM Fell DW Pica', serif;
+    color: #e0d4c1;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.container {
+    width: 100%;
+    max-width: 1200px;
+    text-align: center;
+}
+
+header h1 {
+    font-size: 3em;
+    color: #f5e5c6;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+    margin-bottom: 30px;
+}
+
+.character-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 0px;
+    justify-content: center;
+    padding: 0;
+    list-style: none;
+    width: 100%;
+    max-width: 614px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.character-item {
+    display: block;
+    position: relative;
+    width: 130px;
+    height: 163px;
+    background-image: url('images/portrait_frame.png');
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    text-decoration: none;
+    margin-right: -9px;
+    margin-bottom: -25px;
+}
+
+.character-item:nth-child(5n) {
+    margin-right: 0;
+}
+
+.character-item:hover {
+    transform: scale(1.05);
+    background-image: url('images/portrait_frame_highlighted.png');
+    z-index: 10;
+}
+
+.character-item img.icon {
+    width: 75%;
+    height: auto;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -52%);
+    pointer-events: none;
+}
+
+.character-item:hover img.icon {
+    transform: translate(-50%, -52%) scale(calc(1 / 1.05));
+}
+
+@media (max-width: 768px) {
+    header h1 {
+        font-size: 2.5em;
+    }
+    .character-grid {
+        grid-template-columns: repeat(4, 1fr);
+        max-width: 465px;
+    }
+    .character-item {
+        width: 120px;
+        height: 150px;
+        margin-right: -5px;
+        margin-bottom: -20px;
+    }
+    .character-item:nth-child(5n) {
+        margin-right: -5px;
+    }
+    .character-item:nth-child(4n) {
+        margin-right: 0;
+    }
+}
+
+@media (max-width: 520px) {
+    header h1 {
+        font-size: 2em;
+    }
+    .character-grid {
+        grid-template-columns: repeat(3, 1fr);
+        max-width: 322px;
+    }
+    .character-item {
+        width: 110px;
+        height: 138px;
+        margin-right: -4px;
+        margin-bottom: -18px;
+    }
+    .character-item:nth-child(5n),
+    .character-item:nth-child(4n) {
+        margin-right: -4px;
+    }
+    .character-item:nth-child(3n) {
+        margin-right: 0;
+    }
+}
