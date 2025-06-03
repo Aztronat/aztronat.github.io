@@ -1,3 +1,17 @@
+@font-face {
+    font-family: 'Hammerhead Medium';
+    src: url('../HammerheadMedium.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Hammerhead Regular';
+    src: url('../HammerheadRegular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
 body {
     margin: 0;
     background-color: #2c2521;
@@ -22,10 +36,11 @@ body {
 }
 
 header h1 {
-    font-size: 3em;
+    font-size: 2.7em;
     color: #f5e5c6;
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
     margin-bottom: 30px;
+    font-family: 'Hammerhead Medium', serif;
 }
 
 .character-grid {
@@ -122,4 +137,22 @@ header h1 {
     .character-item:nth-child(3n) {
         margin-right: 0;
     }
+}
+
+.character-item.no-skilltree {
+    opacity: 0.3;
+    filter: grayscale(70%);
+    pointer-events: none;
+}
+
+.character-item.no-skilltree:hover {
+    transform: none !important;
+    background-image: url('images/portrait_frame.png') !important;
+    z-index: auto !important;
+    opacity: 0.3 !important;
+    filter: grayscale(70%) !important;
+}
+
+.character-item.no-skilltree:hover img.icon {
+    transform: translate(-50%, -52%) !important;
 }

@@ -19,13 +19,41 @@ document.addEventListener('DOMContentLoaded', () => {
         { name: "Wormwood", id: "Wormwood" },
         { name: "Wurt", id: "Wurt" },
         { name: "Walter", id: "Walter" },
-        { name: "Wanda", id: "Wanda" }
+        { name: "Wanda", id: "Wanda" },
+        { name: "Random", id: "Random" }
     ];
+
+    const charactersWithoutSkilltree = ["WX-78", "Wickerbottom", "Wes", "Maxwell", "Webber", "Warly", "Wanda"];
 
     characters.forEach(character => {
         const characterLink = document.createElement('a');
         characterLink.classList.add('character-item');
-        characterLink.href = `/dst/skilltree/${character.id}`;
+
+        if (character.id === "Random") {
+            characterLink.classList.remove('no-skilltree');
+            characterLink.href = `/dst/skilltree/Random.html`;
+            
+            characterLink.addEventListener('click', function(event) {
+                event.preventDefault();
+                
+                const skillTreeCharacters = characters.filter(char => 
+                    !charactersWithoutSkilltree.includes(char.id) && char.id !== "Random"
+                );
+
+                if (skillTreeCharacters.length > 0) {
+                    const randomIndex = Math.floor(Math.random() * skillTreeCharacters.length);
+                    const randomCharacter = skillTreeCharacters[randomIndex];
+                    window.open(`/dst/skilltree/${randomCharacter.id}.html`, '_blank');
+                } else {
+                    alert("No skill trees available for random selection!");
+                }
+            });
+        } else if (charactersWithoutSkilltree.includes(character.id)) {
+            characterLink.classList.add('no-skilltree');
+            characterLink.href = "javascript:void(0);";
+        } else {
+            characterLink.href = `/dst/skilltree/${character.id}.html`;
+        }
 
         const characterIcon = document.createElement('img');
         characterIcon.classList.add('icon');

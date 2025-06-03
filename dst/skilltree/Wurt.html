@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wurt - DST Skill Tree</title>
+    <link rel="stylesheet" href="skilltree.css?v=1.0.0">
+    <link href="https://fonts.googleapis.com/css2?family=IM+Fell+DW+Pica:ital@0;1&display=swap" rel="stylesheet">
+    <style>
+        /* Character page specific layout styles */
+        /* Base body styles (background, main font, flex properties) come from skilltree.css */
+        
+        .character-page-main-area {
+            flex: 1 0 auto; /* Allows content to grow, pushing footer down */
+            width: 100%;    /* Occupies width within body's padding (from skilltree.css) */
+            max-width: 1200px; /* Consistent max content width */
+            /* Centering is handled by body's align-items:center from skilltree.css */
+        }
+
+        .character-page-main-area header h1 {
+             text-align: center; /* Ensure character name heading is centered */
+        }
+
+        /* Footer styles (copied from index.html's inline style block for exact replication) */
+        footer {
+            text-align: center;
+            padding: 1em;
+            width: 100%; /* Footer spans full browser width */
+            font-size: 120%;
+            font-family: 'Hammerhead Regular', serif;
+            flex-shrink: 0; /* Prevent footer from shrinking */
+        }
+        footer p {
+            margin: 0.25em 0;
+        }
+    </style>
+</head>
+<body> <!-- Body gets general styling from skilltree.css -->
+    <div class="character-page-main-area">
+        <header>
+            <!-- This h1 uses styles from skilltree.css (font, color) and is centered by the rule above -->
+            <h1>Wurt's Skill Tree</h1> 
+        </header>
+        <main>
+            <p style="text-align: center; margin-top: 20px;">Wurt's skill tree content will appear here.</p>
+            <!-- Actual skill tree UI and logic will be added here later -->
+        </main>
+    </div>
+
+    <!-- Footer HTML (copied from index.html) -->
+    <footer>
+        <p>Made by Aztronat with <img src="images/heart.png" alt="<3" style="height: 1.1em; vertical-align: middle;"></p>
+        <p>Build <span id="build-version">1.0.1</span></p>
+    </footer>
+</body>
+</html> 

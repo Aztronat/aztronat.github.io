@@ -1,0 +1,1590 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wilson - DST Skill Tree</title>
+    <link rel="stylesheet" href="skilltree.css?v=1.0.0">
+    <link href="https://fonts.googleapis.com/css2?family=IM+Fell+DW+Pica:ital@0;1&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Bellefair&display=swap" rel="stylesheet">
+    <style>
+
+        .character-page-main-area {
+            flex: 1 0 auto; 
+            width: 100%;
+            max-width: 1200px; 
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .character-page-main-area header h1 {
+             text-align: center;
+             margin-top: -0.1em;
+        }
+
+        #skill-tree-container {
+            width: 792px;
+            height: 492px;
+            background-image: url('images/character_skilltree/wilson_background.webp');
+            background-size: 83% auto;
+            background-repeat: no-repeat;
+            background-position: center 45%;
+            border: none; 
+            position: relative; 
+            margin: 20px auto; 
+            margin-top: 10px;
+        }
+
+        #insight-points-display {
+            position: absolute;
+            top: 89.2px;
+            left: 49.9%;
+            transform: translate(-48.8%, -38%);
+            font-size: 1.5em;
+            color: #f5e5c6;
+            font-family: 'Hammerhead Regular', serif;
+            z-index: 10;
+            background-image: url('images/insight_point.webp'), url('images/skill_icon_textbox_white.webp');
+            background-size: contain, cover;
+            background-repeat: no-repeat;
+            background-position: center, center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding-top: 10.7px;
+            padding-right: 1.7px;
+            width: 64.5px;
+            height: 57px;
+            text-align: center;
+        }
+
+        #insight-text-display {
+            position: absolute;
+            top: 91px;
+            left: 63.35%;
+            transform: translateX(-50%); 
+            font-size: 1.21em;
+            color: #f5e5c6; 
+            font-family: 'Hammerhead Regular', serif;
+            z-index: 10;
+            white-space: nowrap; 
+        }
+
+        .skill-node {
+            position: absolute;
+            width: 42px;
+            height: 42px;
+            color: white;
+            font-size: 8px;
+            line-height: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            box-sizing: border-box; 
+            cursor: pointer;
+            z-index: 2;
+            padding: 1px;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            filter: brightness(1.1);
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        .skill-node:active {
+            transform: translateY(2.5px);
+        }
+
+        .skill-node.lock-type { 
+            width: 34px;
+            height: 34px;
+            border-color: #ffd700; 
+            border-radius: 30%; 
+        }
+         .skill-node.root-skill {
+             border-color: #90ee90; 
+        }
+        .skill-node:hover {
+            box-shadow: none; 
+        }
+
+        .skill-node.highlighted {
+            box-shadow: none !important; 
+        }
+
+        .skill-node.unlocked {
+            border-color: #ffec8b;
+            color: #333; 
+        }
+        .skill-node.can-unlock {
+            border-color: #daa520;
+        }
+        .skill-node.locked {
+            border-color: #999999;
+        }
+
+        .skill-node.lock-type.unlocked {
+            border-color: #ffec8b;
+            color: #333;
+        }
+        .skill-node.lock-type.locked {
+            border-color: #888;
+        }
+
+
+        @keyframes lockShine {
+            0% { box-shadow: 0 0 5px #ffffff; }
+            50% { box-shadow: 0 0 15px #ffeeaa, 0 0 10px #ffffff inset; }
+            100% { box-shadow: 0 0 5px #ffffff; }
+        }
+        .lock-shine-effect {
+            animation: lockShine 0.7s ease-out;
+        }
+
+        #skill-lines-svg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none; 
+            z-index: 1; 
+            display: none;
+        }
+        
+        #skill-info-panel-container {
+            width: 681px;
+            height: 187.65px;
+            background-image: url('images/info_box.webp');
+            background-size: 100% 100%;
+            background-repeat: no-repeat;
+            background-position: center;
+            margin: -10px auto 25px auto;
+            padding: 18px;
+            border-radius: 10px;
+            color: #52412c; 
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            box-sizing: border-box;
+            position: relative; 
+            margin-top: -85px;
+            margin-bottom: 0;
+            z-index: 3;
+        }
+        #skill-info-title {
+            font-family: 'Hammerhead Regular', serif;
+            font-size: 1.6em;
+            color: #5d4b2c;
+            margin: 0;
+            position: absolute;
+            top: 30px;
+            left: 40px;
+            width: calc(100% - 80px);
+            text-align: center;
+        }
+        #skill-info-desc {
+            font-family: 'Bellefair', serif;
+            font-size: 1.3em;
+            text-align: left;
+            white-space: pre-line;
+            text-shadow: 0 0 1px #070604;
+            max-height: 110px;
+            overflow-y: auto;
+            padding-left: 20px;
+            padding-right: 20px; 
+            font-weight: 400;
+            text-rendering: optimizeLegibility;
+        }
+        
+        #reset-insight-button {
+            width: 255.2px;
+            height: 69.6px;
+            background-image: url('images/button_normal.webp');
+            background-size: 100% 100%;
+            background-repeat: no-repeat;
+            background-position: center;
+            background-color: transparent;
+            color: #070604;
+            border: none;
+            border-radius: 0;
+            font-family: 'Bellefair', serif;
+            font-size: 2em;
+            cursor: pointer;
+            position: absolute;
+            bottom: -80px;
+            left: 0;
+            right: 0;
+            margin: auto;
+            text-align: center;
+            line-height: 58px;
+            position: relative;
+            text-shadow: 0 0 1px #070604;
+        }
+        #reset-insight-button:hover {
+            background-image: url('images/button_hover.webp');
+            background-color: transparent;
+        }
+        #reset-insight-button:active {
+            background-image: url('images/button_pressed.webp');
+            transform: translateY(5px);
+        }
+
+        #learn-skill-button {
+            display: inline-block; 
+
+            width: 199.375px;
+            height: 54.375px;
+            background-image: url('images/button_normal.webp');
+            background-size: 100% 100%;
+            background-repeat: no-repeat;
+            background-position: center;
+            background-color: transparent;
+            color: #070604;
+            border: none; 
+            border-radius: 0; 
+            font-family: 'Bellefair', serif;
+            font-size: 1.8em;
+            text-align: center;
+            line-height: 53px;
+            text-shadow: 0 0 1px #070604;
+
+            cursor: pointer;
+            position: absolute; 
+            top: 90%; 
+            left: 50%;
+            transform: translate(-50%, -50%); 
+            z-index: 5; 
+        }
+        #learn-skill-button:hover {
+            background-image: url('images/button_hover.webp');
+            background-color: transparent;
+        }
+        #learn-skill-button:active {
+            background-image: url('images/button_pressed.webp');
+            background-color: transparent;
+            top: calc(100% - 13px);
+        }
+
+        #skill-mastered-button {
+            display: inline-block; 
+            width: 222.4px;
+            height: 65.6px;
+            background-image: url('images/skill_mastered.webp');
+            background-size: 100% 100%;
+            background-repeat: no-repeat;
+            background-position: center;
+            background-color: transparent;
+            color: #201f1e;
+            border: none; 
+            border-radius: 0; 
+            font-family: 'Hammerhead Regular', serif;
+            font-size: 1.7em;
+            text-align: center;
+            line-height: 68px;
+            text-shadow: 0 0 1px #201f1e;
+
+            cursor: default;
+            position: absolute; 
+            top: 91%; 
+            left: 50%;
+            transform: translate(-50%, -50%); 
+            z-index: 5; 
+        }
+
+        .skill-mastered-state {
+            cursor: default !important;
+        }
+        .skill-mastered-state:hover {
+        }
+
+        .hidden {
+            visibility: hidden !important; 
+        }
+
+        footer {
+            text-align: center;
+            padding: 1em;
+            width: 100%; 
+            font-size: 120%;
+            font-family: 'Hammerhead Regular', serif;
+            flex-shrink: 0; 
+        }
+        footer p {
+            margin: 0.25em 0;
+        }
+
+        .section-title {
+            position: absolute;
+            font-family: 'Hammerhead Regular', serif;
+            font-size: 1.43em;
+            color: #f5e5c6;
+            z-index: 3; 
+            text-align: center;
+        }
+
+        #torch-title {
+            top: 135.6px;
+            left: 141.6px;
+            transform: translateX(-50%); 
+        }
+        #alchemy-title {
+            top: 135.6px;
+            left: 312px;
+            transform: translateX(-50%); 
+        }
+        #beard-title {
+            top: 135.6px;
+            left: 499.2px;
+            transform: translateX(-50%); 
+        }
+        #affinity-title {
+            top: 135.6px;
+            left: 651.6px;
+            transform: translateX(-50%); 
+        }
+
+        .highlight-frame {
+            position: absolute;
+            width: 125%;
+            height: 125%;
+            object-fit: contain;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .skill-node.lock-type .highlight-frame {
+            width: 165%;
+            height: 165%;
+        }
+
+        main {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-top: 0;
+            box-sizing: border-box;
+        }
+
+        #skilltree-wrapper {
+            width: 792px;
+            height: 670.4px;
+            background-image: url('images/skilltree_background.webp');
+            background-size: 100% 100%;
+            background-repeat: no-repeat;
+            position: relative;
+            margin: -25px auto 20px auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            transition: background-image 0.5s ease-in-out;
+        }
+
+        #skill-tree-container {
+            width: 100%;
+            height: 492px;
+            background-image: url('images/character_skilltree/wilson_background.webp');
+            background-size: 83% auto; 
+            background-repeat: no-repeat;
+            border-radius: 10px;
+            color: #52412c; 
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            box-sizing: border-box;
+            position: relative; 
+            margin-top: 8px;
+            margin-bottom: 0;
+        }
+
+        #lunar-animation {
+            width: 782.6px;
+            height: 624px;
+            background-image: url('images/skills_lunar.png');
+            background-size: 7826px 6240px;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 1;
+            margin-left: -9.5px;
+            margin-top: -14px;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.5s ease-in-out;
+            animation: floatUpDown 4s ease-in-out infinite;
+        }
+
+        @keyframes floatUpDown {
+            0%, 100% { transform: translate(-50%, -50%) translateY(5px); }
+            50% { transform: translate(-50%, -50%) translateY(-5px); }
+        }
+
+        #shadow-animation {
+            width: 780px;
+            height: 580px;
+            background-image: url('images/skills_shadow.png');
+            background-size: 7800px 5800px;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            margin-top: -15px;
+            transform: translate(-50%, -50%);
+            z-index: 1;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.5s ease-in-out;
+        }
+
+    </style>
+</head>
+<body> 
+    <div class="character-page-main-area">
+        <header>
+            <h1>Wilson's Skill Tree</h1> 
+        </header>
+        <main style="width: 100%; display: flex; flex-direction: column; align-items: center;">
+            <img id="skilltree-background-img" src="images/skilltree_background.webp" style="display: none;">
+            <canvas id="skilltree-background-canvas" style="display: none;"></canvas>
+            <div id="skilltree-wrapper">
+                <div id="lunar-animation"></div>
+                <div id="shadow-animation"></div>
+                <div id="skill-tree-container">
+                    <div id="insight-points-display">15</div>
+                    <span id="insight-text-display"></span>
+                    <svg id="skill-lines-svg"></svg>
+                    <div id="torch-title" class="section-title">TORCH</div>
+                    <div id="alchemy-title" class="section-title">ALCHEMY</div>
+                    <div id="beard-title" class="section-title">BEARD</div>
+                    <div id="affinity-title" class="section-title">AFFINITY</div>
+                </div>
+                <div id="skill-info-panel-container">
+                    <h3 id="skill-info-title">Select a skill</h3>
+                    <p id="skill-info-desc">Hover over or click a skill to see its details.</p>
+                    <button id="learn-skill-button" class="hidden">Learn</button>
+                    <button id="skill-mastered-button" class="hidden">SKILL MASTERED</button>
+                </div>
+                <button id="reset-insight-button" class="hidden">Reset Insight</button>
+            </div>
+        </main>
+    </div>
+
+    <footer>
+        <p>Made by Aztronat with <img src="images/heart.png" alt="<3" style="height: 1.1em; vertical-align: middle;"></p>
+        <p>Build <span id="build-version">1.0.1</span></p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            let wilsonSkillsData = {
+                wilson_alchemy_1: { title: "Transmutation", desc: "Transform 3 Twigs into a Log.\\nTransform a Log into 2 Twigs.", icon: "wilson_alchemy_1", pos: [-62,174.5], group: "alchemy", root: true, connects: ["wilson_alchemy_2", "wilson_alchemy_3", "wilson_alchemy_4"], cost: 1, state: 'locked', prereqs: [], locks: [], isLock: false },
+                wilson_alchemy_2: { title: "Transmute Gems I", desc: "Transform 2 Red Gems into a Blue Gem.\\nTransform 2 Blue Gems into a Red Gem.\\nTransform a Blue and Red Gem into a Purple Gem.", icon: "wilson_alchemy_gem_1", pos: [-62,121.5], group: "alchemy", connects: ["wilson_alchemy_5"], cost: 1, state: 'locked', prereqs: [], locks: [], isLock: false },
+                wilson_alchemy_5: { title: "Transmute Gems II", desc: "Transform 3 Purple Gems into an Orange Gem.\\nTransform 3 Orange Gems into a Yellow Gem.", icon: "wilson_alchemy_gem_2", pos: [-62,84], group: "alchemy", connects: ["wilson_alchemy_6"], cost: 1, state: 'locked', prereqs: [], locks: [], isLock: false },
+                wilson_alchemy_6: { title: "Transmute Gems III", desc: "Transform 3 Yellow Gems into a Green Gem.\\nTransform 6 Gems of different colors into an Iridescent Gem.\\n", icon: "wilson_alchemy_gem_3", pos: [-62,46.5], group: "alchemy", cost: 1, state: 'locked', prereqs: [], locks: [], isLock: false },
+                wilson_alchemy_3: { title: "Transmute Ore I", desc: "Transform 3 Rocks into a Flint.\\nTransform 2 Flint into Rocks.", icon: "wilson_alchemy_ore_1", pos: [-100,121.5], group: "alchemy", connects: ["wilson_alchemy_7"], cost: 1, state: 'locked', prereqs: [], locks: [], isLock: false },
+                wilson_alchemy_7: { title: "Transmute Ore II", desc: "Transform 3 Nitre into a Gold Nugget.\\nTransform 2 Gold Nuggets into Nitre.", icon: "wilson_alchemy_ore_2", pos: [-100,84], group: "alchemy", connects: ["wilson_alchemy_8"], cost: 1, state: 'locked', prereqs: [], locks: [], isLock: false },
+                wilson_alchemy_8: { title: "Transmute Ore III", desc: "Transform 2 Cut Stone into Marble.\\nTransform Marble into Cut Stone.\\nTransform 2 Marble into Moon Rock.\\n", icon: "wilson_alchemy_ore_3", pos: [-100,46.5], group: "alchemy", cost: 1, state: 'locked', prereqs: [], locks: [], isLock: false },
+                wilson_alchemy_4: { title: "Transmute Icky I", desc: "Transform 3 Morsels into a Meat.\\nTransform a Meat into 2 Morsels.", icon: "wilson_alchemy_iky_1", pos: [-22.5,121.5], group: "alchemy", connects: ["wilson_alchemy_9"], cost: 1, state: 'locked', prereqs: [], locks: [], isLock: false },
+                wilson_alchemy_9: { title: "Transmute Icky II", desc: "Transform 2 Beard Hair into Beefalo Wool.\\n Transform 2 Beefalo Wool into Beard Hair.", icon: "wilson_alchemy_iky_2", pos: [-22.5,84], group: "alchemy", connects: ["wilson_alchemy_10"], cost: 1, state: 'locked', prereqs: [], locks: [], isLock: false },
+                wilson_alchemy_10: { title: "Transmute Icky III", desc: "Transform 6 Rot into Manure.\\nTransform 2 Hound's Teeth into a Bone Shards.\\nTransform 2 Bone Shards into a Hound's Tooth.\\n", icon: "wilson_alchemy_iky_3", pos: [-22.5,46.5], group: "alchemy", cost: 1, state: 'locked', prereqs: [], locks: [], isLock: false },
+                
+                wilson_torch_1: { title: "Torch Longevity I", desc: "Torches last a little longer.", icon: "wilson_torch_time_1", pos: [-213.,174.5], group: "torch", root: true, connects: ["wilson_torch_2"], cost: 1, state: 'locked', prereqs: [], locks: [], isLock: false },
+                wilson_torch_2: { title: "Torch Longevity II", desc: "Torches last a fair amount longer.", icon: "wilson_torch_time_2", pos: [-213,137.5], group: "torch", connects: ["wilson_torch_3"], cost: 1, state: 'locked', prereqs: [], locks: [], isLock: false },
+                wilson_torch_3: { title: "Torch Longevity III", desc: "Torches last a lot longer.", icon: "wilson_torch_time_3", pos: [-213,100.25], group: "torch", cost: 1, state: 'locked', prereqs: [], locks: [], isLock: false },
+                wilson_torch_4: { title: "Torch Range I", desc: "Torches are a little brighter.", icon: "wilson_torch_brightness_1", pos: [-172.5,174.5], group: "torch", root: true, connects: ["wilson_torch_5"], cost: 1, state: 'locked', prereqs: [], locks: [], isLock: false },
+                wilson_torch_5: { title: "Torch Range II", desc: "Torches are a fair amount brighter.", icon: "wilson_torch_brightness_2", pos: [-172.5,137.5], group: "torch", connects: ["wilson_torch_6"], cost: 1, state: 'locked', prereqs: [], locks: [], isLock: false },
+                wilson_torch_6: { title: "Torch Range III", desc: "Torches are a lot brighter.", icon: "wilson_torch_brightness_3", pos: [-172.5,100.25], group: "torch", cost: 1, state: 'locked', prereqs: [], locks: [], isLock: false },
+                wilson_torch_lock_1: { title: "Torch Mastery", desc: "Learn 3 Torch skills to unlock.", icon: "lock_torch", pos: [-195,57.5], group: "torch", root: true, lock_open: true, connects: ["wilson_torch_7"], cost: 0, state: 'locked', prereqs: [], locks: [], isLock: true, hasShone: false, requiresGroupSkills: { group: "torch", count: 3 } },
+                wilson_torch_7: { title: "Torch Toss", desc: "Uses a scientifically formulated trajectory to always land right side up.", icon: "wilson_torch_throw", pos: [-195.5,20], group: "torch", cost: 1, state: 'locked', prereqs: [], locks: [], isLock: false },
+
+                wilson_beard_1: { title: "Beard Insulation I", desc: "Gain high insulation from your beard.", icon: "wilson_beard_insulation_1", pos: [65.5,174.5], group: "beard", root: true, connects: ["wilson_beard_2"], cost: 1, state: 'locked', prereqs: [], locks: [], isLock: false },
+                wilson_beard_2: { title: "Beard Insulation II", desc: "Gain higher insulation from your beard.", icon: "wilson_beard_insulation_2", pos: [65.5,137.5], group: "beard", connects: ["wilson_beard_3"], cost: 1, state: 'locked', prereqs: [], locks: [], isLock: false },
+                wilson_beard_3: { title: "Beard Insulation III", desc: "Gain highest insulation from your beard.", icon: "wilson_beard_insulation_3", pos: [65.5,100.25], group: "beard", cost: 1, state: 'locked', prereqs: [], locks: [], isLock: false },
+                wilson_beard_4: { title: "Beard Growth I", desc: "Your magnificent beard grows a little faster.", icon: "wilson_beard_speed_1", pos: [105.5,174.5], group: "beard", root: true, connects: ["wilson_beard_5"], cost: 1, state: 'locked', prereqs: [], locks: [], isLock: false },
+                wilson_beard_5: { title: "Beard Growth II", desc: "Your magnificent beard grows a fair amount faster.", icon: "wilson_beard_speed_2", pos: [105.5,137.5], group: "beard", connects: ["wilson_beard_6"], cost: 1, state: 'locked', prereqs: [], locks: [], isLock: false },
+                wilson_beard_6: { title: "Beard Growth III", desc: "Your magnificent beard grows much faster.", icon: "wilson_beard_speed_3", pos: [105.5,100.25], group: "beard", cost: 1, state: 'locked', prereqs: [], locks: [], isLock: false },
+                wilson_beard_lock_1: { title: "Beard Storage", desc: "Learn 3 Beard skills to unlock.", icon: "lock_beard", pos: [84.5,57.5], group: "beard", root: true, lock_open: true, connects: ["wilson_beard_7"], cost: 0, state: 'locked', prereqs: [], locks: [], isLock: true, hasShone: false, requiresGroupSkills: { group: "beard", count: 3 } },
+                wilson_beard_7: { title: "Beard Hair Storage", desc: "Stash food in your beard.", icon: "wilson_beard_inventory", pos: [84,20], group: "beard", cost: 1, state: 'locked', prereqs: [], locks: [], isLock: false },
+
+                wilson_allegiance_lock_1: { title: "Allegiance Path", desc: "Learn 12 skills to unlock.", icon: "lock_allegiance_main", pos: [208,172], group: "allegiance", root: true, lock_open: true, connects: ["wilson_allegiance_shadow", "wilson_allegiance_lunar"], cost: 0, state: 'locked', prereqs: [], locks: [], isLock: true, hasShone: false, requiresGroupSkills: { group: "any", count: 12 } }, 
+                wilson_allegiance_lock_2: { title: "Shadow Prereq 1 (Defeat Fuelweaver)", desc: "Find and defeat the Ancient Fuelweaver.", icon: "lock_shadow_fw", pos: [188,127.5], group: "allegiance", root: true, lock_open: true, connects: [], cost: 0, state: 'unlocked', prereqs: [], locks: [], isLock: true, hasShone: false },
+                wilson_allegiance_lock_4: { title: "Shadow Prereq 2 (No Lunar)", desc: "Have no lunar affinity.", icon: "lock_shadow_nolunar", pos: [188,84.5], group: "allegiance", root: true, lock_open: true, connects: [], cost: 0, state: 'unlocked', prereqs: [], locks: [], isLock: true, hasShone: false },
+                wilson_allegiance_shadow: { title: "Shadow Courtier", desc: "The Queen will reward your loyalty with the secrets of Shadow\\nTransmutation.", icon: "wilson_favor_shadow", pos: [188.5,28], group: "allegiance", cost: 1, state: 'locked', prereqs: [], locks: ["wilson_allegiance_lock_1", "wilson_allegiance_lock_2", "wilson_allegiance_lock_4"], isLock: false },
+                
+                wilson_allegiance_lock_3: { title: "Lunar Prereq 1 (Defeat CC)", desc: "Find and defeat the Celestial Champion.", icon: "lock_lunar_cc", pos: [229,127.5], group: "allegiance", root: true, lock_open: true, connects: [], cost: 0, state: 'unlocked', prereqs: [], locks: [], isLock: true, hasShone: false },
+                wilson_allegiance_lock_5: { title: "Lunar Prereq 2 (No Shadow)", desc: "Have no shadow affinity.", icon: "lock_lunar_noshadow", pos: [229,84.5], group: "allegiance", root: true, lock_open: true, connects: [], cost: 0, state: 'unlocked', prereqs: [], locks: [], isLock: true, hasShone: false },
+                wilson_allegiance_lunar: { title: "Lunar Innovator", desc: "The Cryptic Founder will reward your curiosity with the secrets of Lunar\\nTransmutation.", icon: "wilson_favor_lunar", pos: [229.5,28], group: "allegiance", cost: 1, state: 'locked', prereqs: [], locks: ["wilson_allegiance_lock_1", "wilson_allegiance_lock_3", "wilson_allegiance_lock_5"], isLock: false }
+            };
+
+            for (const skillIdInit in wilsonSkillsData) {
+                wilsonSkillsData[skillIdInit].prereqs = [];
+            }
+
+            for (const skillIdLoop in wilsonSkillsData) {
+                const currentSkill = wilsonSkillsData[skillIdLoop];
+                if (currentSkill.connects) {
+                    currentSkill.connects.forEach(childId => {
+                        if (wilsonSkillsData[childId]) {
+                            if (!wilsonSkillsData[childId].prereqs.includes(skillIdLoop)) {
+                                wilsonSkillsData[childId].prereqs.push(skillIdLoop);
+                            }
+                        }
+                    });
+                }
+                if (currentSkill.locks) {
+                    currentSkill.locks.forEach(lockId => {
+                        if (wilsonSkillsData[lockId]) { 
+                            if (!currentSkill.prereqs.includes(lockId)) {
+                                currentSkill.prereqs.push(lockId);
+                            }
+                        }
+                    });
+                }
+            }
+            
+            const allegianceFavorSkills = {
+                'wilson_allegiance_shadow': ["wilson_allegiance_lock_1", "wilson_allegiance_lock_2", "wilson_allegiance_lock_4"],
+                'wilson_allegiance_lunar': ["wilson_allegiance_lock_1", "wilson_allegiance_lock_3", "wilson_allegiance_lock_5"]
+            };
+            for (const favorSkillId in allegianceFavorSkills) {
+                if (wilsonSkillsData[favorSkillId]) {
+                    allegianceFavorSkills[favorSkillId].forEach(lockId => {
+                        if (wilsonSkillsData[lockId] && !wilsonSkillsData[favorSkillId].prereqs.includes(lockId)) {
+                            wilsonSkillsData[favorSkillId].prereqs.push(lockId);
+                        }
+                    });
+                }
+            }
+
+            for (const skillIdUnique in wilsonSkillsData) {
+                if (wilsonSkillsData[skillIdUnique].prereqs) {
+                    wilsonSkillsData[skillIdUnique].prereqs = [...new Set(wilsonSkillsData[skillIdUnique].prereqs)];
+                }
+            }
+
+            const container = document.getElementById('skill-tree-container');
+            const svgLines = document.getElementById('skill-lines-svg');
+            const skillInfoTitle = document.getElementById('skill-info-title');
+            const skillInfoDesc = document.getElementById('skill-info-desc');
+            const insightPointsDisplay = document.getElementById('insight-points-display');
+            const resetInsightButton = document.getElementById('reset-insight-button');
+            const learnSkillButton = document.getElementById('learn-skill-button');
+            const skillMasteredButton = document.getElementById('skill-mastered-button');
+
+            const totalInsightPoints = 15;
+            let spentInsightPoints = 0;
+            let highlightedSkillId = null;
+            let currentAllegiance = null; 
+
+            const containerWidth = 792;
+            const containerHeight = 492;
+            const nodeWidth = 38;
+            const nodeHeight = 38;
+
+            const xOffset = containerWidth / 2.009;
+            const yOffset = 182.9;
+
+            const skillElements = {}; 
+            let skillNodes = {}; 
+
+            function updateInsightDisplay() {
+                const remainingPoints = totalInsightPoints - spentInsightPoints;
+                insightPointsDisplay.textContent = remainingPoints.toString();
+                const insightTextDisplay = document.getElementById('insight-text-display');
+                const baseLeft = '63.35%'; 
+                const maxReachedOffset = '12px';
+
+                if (insightTextDisplay) {
+                    if (remainingPoints > 0) {
+                        insightTextDisplay.textContent = "Insight Remaining";
+                        insightTextDisplay.style.left = baseLeft;
+                    } else {
+                        insightTextDisplay.textContent = "MAX Insight Reached";
+                        insightTextDisplay.style.left = `calc(${baseLeft} + ${maxReachedOffset})`;
+                    }
+                }
+            }
+
+            function updateLearnButtonVisibility(skillIdForButtons = highlightedSkillId) {
+                const skillData = wilsonSkillsData[skillIdForButtons];
+
+                if (!skillData || skillData.isLock) {
+                    learnSkillButton.classList.add('hidden');
+                    skillMasteredButton.classList.add('hidden');
+                    return;
+                }
+
+                if (skillData.state === 'unlocked') {
+                    learnSkillButton.classList.add('hidden');
+                    skillMasteredButton.classList.remove('hidden');
+                    return;
+                }
+
+                skillMasteredButton.classList.add('hidden');
+                learnSkillButton.textContent = "Learn";
+
+                let skillsInPath = new Set();
+                const viablePath = getRequiredSkillsForPathIfViable(skillIdForButtons, skillsInPath, new Set());
+
+                if (viablePath === null) {
+                    learnSkillButton.classList.add('hidden');
+                    return;
+                }
+
+                let pathTotalCost = 0;
+                skillsInPath.forEach(id => {
+                    if (wilsonSkillsData[id]) {
+                        pathTotalCost += wilsonSkillsData[id].cost;
+                    } else {
+                         console.warn(`Skill data missing for path calculation: ${id}`);
+                    }
+                });
+
+                if ((totalInsightPoints - spentInsightPoints) >= pathTotalCost) {
+                    learnSkillButton.classList.remove('hidden');
+                } else {
+                    learnSkillButton.classList.add('hidden');
+                }
+            }
+
+            function updateResetButtonVisibility() {
+                if (spentInsightPoints > 0) {
+                    resetInsightButton.classList.remove('hidden');
+                } else {
+                    resetInsightButton.classList.add('hidden');
+                }
+            }
+
+            function resetInsightState() {
+                spentInsightPoints = 0;
+                highlightedSkillId = null;
+                currentAllegiance = null;
+
+                for (const skillId in wilsonSkillsData) {
+                    const skill = wilsonSkillsData[skillId];
+                    skill.state = 'locked';
+                    if (skill.isLock) {
+                        skill.hasShone = false; 
+                    }
+                }
+                if (wilsonSkillsData['wilson_allegiance_lock_2']) {
+                    wilsonSkillsData['wilson_allegiance_lock_2'].state = 'unlocked';
+                }
+                if (wilsonSkillsData['wilson_allegiance_lock_3']) {
+                    wilsonSkillsData['wilson_allegiance_lock_3'].state = 'unlocked';
+                }
+                if (wilsonSkillsData['wilson_allegiance_lock_4']) { 
+                    wilsonSkillsData['wilson_allegiance_lock_4'].state = 'unlocked';
+                }
+                if (wilsonSkillsData['wilson_allegiance_lock_5']) { 
+                    wilsonSkillsData['wilson_allegiance_lock_5'].state = 'unlocked';
+                }
+
+                updateAllSkillStatesAndRender();
+                updateLearnButtonVisibility(); 
+                updateResetButtonVisibility(); 
+            }
+
+            resetInsightButton.addEventListener('click', resetInsightState);
+
+            function updateAllSkillStatesAndRender() {
+                let changedInLoop;
+                let iterations = 0;
+                do {
+                    changedInLoop = false;
+                    iterations++;
+                    for (const skillId in wilsonSkillsData) {
+                        const skill = wilsonSkillsData[skillId];
+                        const oldState = skill.state;
+
+                        if (!skill.isLock && skill.state === 'unlocked') continue; 
+
+                        let allPrereqsMet = true;
+                        if (skill.prereqs && skill.prereqs.length > 0) {
+                            for (const prereqId of skill.prereqs) {
+                                if (!wilsonSkillsData[prereqId] || wilsonSkillsData[prereqId].state !== 'unlocked') {
+                                    allPrereqsMet = false;
+                                    break;
+                                }
+                            }
+                        }
+                        
+                        if (skill.isLock && allPrereqsMet && skill.requiresGroupSkills) {
+                            let learnedInGroup = 0;
+                            for (const otherSkillId in wilsonSkillsData) {
+                                const otherSkill = wilsonSkillsData[otherSkillId];
+                                if (!otherSkill.isLock && otherSkill.state === 'unlocked') {
+                                    if (skill.requiresGroupSkills.group === "any" || otherSkill.group === skill.requiresGroupSkills.group) {
+                                        learnedInGroup++;
+                                    }
+                                }
+                            }
+                            if (learnedInGroup < skill.requiresGroupSkills.count) {
+                                allPrereqsMet = false;
+                            }
+                        }
+
+                        if (skill.isLock) {
+                            let newLockState = 'locked';
+                            if (skillId === 'wilson_allegiance_lock_2') { 
+                                newLockState = (currentAllegiance === 'lunar') ? 'locked' : (allPrereqsMet ? 'unlocked' : 'locked');
+                            } else if (skillId === 'wilson_allegiance_lock_4') { 
+                                newLockState = (currentAllegiance === 'lunar') ? 'locked' : 'unlocked';
+                            } else if (skillId === 'wilson_allegiance_lock_3') { 
+                                newLockState = (currentAllegiance === 'shadow') ? 'locked' : (allPrereqsMet ? 'unlocked' : 'locked');
+                            } else if (skillId === 'wilson_allegiance_lock_5') { 
+                                newLockState = (currentAllegiance === 'shadow') ? 'locked' : 'unlocked';
+                            } else { 
+                                newLockState = allPrereqsMet ? 'unlocked' : 'locked';
+                            }
+                            skill.state = newLockState;
+                        } else { 
+                            if (skill.state === 'unlocked') continue; 
+
+                            if (skillId === 'wilson_allegiance_shadow' && currentAllegiance === 'lunar') {
+                                skill.state = 'locked';
+                                if (oldState !== skill.state) changedInLoop = true;
+                                continue; 
+                            }
+                            if (skillId === 'wilson_allegiance_lunar' && currentAllegiance === 'shadow') {
+                                skill.state = 'locked';
+                                if (oldState !== skill.state) changedInLoop = true;
+                                continue; 
+                            }
+
+                            if (allPrereqsMet) {
+                                if ((totalInsightPoints - spentInsightPoints) >= skill.cost) {
+                                    skill.state = 'can-unlock';
+                                } else {
+                                    skill.state = 'locked'; 
+                                }
+                            } else {
+                                skill.state = 'locked';
+                            }
+                        }
+                        if (oldState !== skill.state) {
+                            changedInLoop = true;
+                            if (skill.isLock && skill.state === 'unlocked' && !skill.hasShone) {
+                                skill.hasShone = true;
+                                const node = skillNodes[skillId];
+                                if (node) {
+                                    node.classList.add('lock-shine-effect');
+                                    setTimeout(() => node.classList.remove('lock-shine-effect'), 700); 
+                                }
+                            }
+                        }
+                    }
+                } while (changedInLoop && iterations < 10);
+
+                renderSkillNodes();
+                updateInsightDisplay();
+
+                const lunarAnimationElement = document.getElementById('lunar-animation');
+                if (lunarAnimationElement) {
+                    if (currentAllegiance === 'lunar') {
+                        lunarAnimationElement.style.visibility = 'visible';
+                        lunarAnimationElement.style.opacity = '0.5';
+                    } else {
+                        lunarAnimationElement.style.opacity = '0';
+                        const hideAfterTransition = function() {
+                             if (lunarAnimationElement.style.opacity === '0') {
+                                lunarAnimationElement.style.visibility = 'hidden';
+                                lunarAnimationElement.removeEventListener('transitionend', hideAfterTransition);
+                             }
+                         };
+                         lunarAnimationElement.removeEventListener('transitionend', hideAfterTransition);
+                         lunarAnimationElement.addEventListener('transitionend', hideAfterTransition);
+                    }
+                }
+                
+                const shadowAnimationElement = document.getElementById('shadow-animation');
+                if (shadowAnimationElement) {
+                    if (currentAllegiance === 'shadow') {
+                        shadowAnimationElement.style.visibility = 'visible';
+                        shadowAnimationElement.style.opacity = '1';
+                    } else {
+                        shadowAnimationElement.style.opacity = '0';
+                        const hideAfterTransition = function() {
+                             if (shadowAnimationElement.style.opacity === '0') {
+                                shadowAnimationElement.style.visibility = 'hidden';
+                                shadowAnimationElement.removeEventListener('transitionend', hideAfterTransition);
+                             }
+                         };
+                         shadowAnimationElement.removeEventListener('transitionend', hideAfterTransition);
+                         shadowAnimationElement.addEventListener('transitionend', hideAfterTransition);
+                    }
+                }
+
+                if (skilltreeWrapper) {
+                    if (currentAllegiance === 'shadow') {
+                        skilltreeWrapper.style.backgroundImage = `url(${shadowGradientDataURL})`;
+                        skilltreeWrapper.style.backgroundSize = '100% 100%';
+                        skilltreeWrapper.style.backgroundRepeat = 'no-repeat';
+                    } else if (currentAllegiance === 'lunar') {
+                         skilltreeWrapper.style.backgroundImage = `url(${lunarGradientDataURL})`;
+                         skilltreeWrapper.style.backgroundSize = '100% 100%';
+                         skilltreeWrapper.style.backgroundRepeat = 'no-repeat';
+                    } else {
+                         skilltreeWrapper.style.backgroundImage = `url(${skilltreeImg.src})`;
+                         skilltreeWrapper.style.backgroundSize = '100% 100%';
+                         skilltreeWrapper.style.backgroundRepeat = 'no-repeat';
+                    }
+                }
+
+            }
+
+            function getRequiredSkillsForPathIfViable(skillId, collectedSkills, visitedInCall) {
+                const skillData = wilsonSkillsData[skillId];
+
+                if (!skillData) return null; 
+                if (visitedInCall.has(skillId)) return collectedSkills; 
+                visitedInCall.add(skillId);
+
+                if (skillData.isLock) {
+                    if (skillData.state !== 'unlocked') return null; 
+                    if (skillData.prereqs) {
+                        for (const prereqId of skillData.prereqs) {
+                            if (getRequiredSkillsForPathIfViable(prereqId, collectedSkills, new Set(visitedInCall)) === null) {
+                                return null; 
+                            }
+                        }
+                    }
+                    return collectedSkills; 
+                }
+
+                if (skillData.state === 'unlocked') {
+                    return collectedSkills; 
+                }
+
+                if (skillData.prereqs) {
+                    for (const prereqId of skillData.prereqs) {
+                        if (getRequiredSkillsForPathIfViable(prereqId, collectedSkills, new Set(visitedInCall)) === null) {
+                            return null; 
+                        }
+                    }
+                }
+                collectedSkills.add(skillId);
+                return collectedSkills;
+            }
+
+            function learnSkill(skillIdToLearn) {
+                const targetSkillData = wilsonSkillsData[skillIdToLearn];
+
+                if (!targetSkillData || targetSkillData.isLock || targetSkillData.state === 'unlocked') {
+                    return; 
+                }
+
+                let skillsToActuallyLearn = new Set();
+                const viablePathSkills = getRequiredSkillsForPathIfViable(skillIdToLearn, skillsToActuallyLearn, new Set());
+
+                if (viablePathSkills === null) {
+                    console.warn("Path learning failed for", skillIdToLearn);
+                    return;
+                }
+
+                let totalCost = 0;
+                skillsToActuallyLearn.forEach(id => {
+                    if (wilsonSkillsData[id]) { 
+                       totalCost += wilsonSkillsData[id].cost; 
+                    }
+                });
+
+                if ((totalInsightPoints - spentInsightPoints) >= totalCost) {
+                    skillsToActuallyLearn.forEach(idToMarkLearned => {
+                        const skillToMark = wilsonSkillsData[idToMarkLearned];
+                        if (skillToMark && skillToMark.state !== 'unlocked') { 
+                            spentInsightPoints += skillToMark.cost;
+                            skillToMark.state = 'unlocked';
+                            if (idToMarkLearned === 'wilson_allegiance_shadow') currentAllegiance = 'shadow';
+                            if (idToMarkLearned === 'wilson_allegiance_lunar') currentAllegiance = 'lunar';
+                        }
+                    });
+                    
+                    updateAllSkillStatesAndRender();
+                    updateLearnButtonVisibility(); 
+                    updateResetButtonVisibility(); 
+                } else {
+                    console.warn("Not enough insight points for", skillIdToLearn);
+                }
+            }
+            
+            function getNodeBackgroundImage(skill, isHover = false) {
+                if (skill.isLock) {
+                    if (skill.state === 'unlocked') {
+                        return isHover ? 'images/skill_icons/general/unlocked_over.webp' : 'images/skill_icons/general/unlocked.webp';
+                    } else {
+                        return isHover ? 'images/skill_icons/general/locked_over.webp' : 'images/skill_icons/general/locked.webp';
+                    }
+                } else {
+                    if (skill.state === 'can-unlock') {
+                        return isHover ? 'images/skill_icons/general/selectable_over.webp' : 'images/skill_icons/general/selectable.webp';
+                    } else if (skill.state === 'unlocked') {
+                        return isHover ? 'images/skill_icons/general/selected_over.webp' : 'images/skill_icons/general/selected.webp';
+                    } else {
+                         return isHover ? 'images/skill_icons/general/unselected_over.webp' : 'images/skill_icons/general/unselected.webp';
+                    }
+                }
+            }
+
+            function renderSkillNodes() {
+                 for (const skillId in wilsonSkillsData) {
+                    const skill = wilsonSkillsData[skillId];
+                    const node = skillNodes[skillId]; 
+                    if (node) {
+                        node.className = 'skill-node'; 
+                        if (skill.isLock) node.classList.add('lock-type');
+                        if (skill.root) node.classList.add('root-skill');
+                        node.classList.add(skill.state); 
+                        if (skillId === highlightedSkillId) {
+                            node.classList.add('highlighted');
+                        }
+                        node.style.backgroundImage = `url('${getNodeBackgroundImage(skill, false)}')`;
+
+                        let skillIcon = node.querySelector('.skill-icon');
+                        if (!skill.isLock) {
+                            if (!skillIcon) {
+                                skillIcon = document.createElement('img');
+                                skillIcon.classList.add('skill-icon');
+                                skillIcon.style.width = '86%';
+                                skillIcon.style.height = '86%';
+                                skillIcon.style.objectFit = 'contain';
+                                skillIcon.style.position = 'absolute';
+                                skillIcon.style.top = '50%';
+                                skillIcon.style.left = '50%';
+                                skillIcon.style.transform = 'translate(-50%, -50%)';
+                                skillIcon.style.zIndex = '2';
+                                node.appendChild(skillIcon);
+                            }
+                            skillIcon.src = `images/skill_icons/wilson/${skill.icon}.webp`;
+                            skillIcon.style.display = 'block';
+                         } else {
+                             if (skillIcon) {
+                                 skillIcon.remove();
+                             }
+                         }
+
+                         let frameIcon = node.querySelector('.highlight-frame');
+                         if (skillId === highlightedSkillId) {
+                            if (!frameIcon) {
+                                frameIcon = document.createElement('img');
+                                frameIcon.classList.add('highlight-frame');
+                                frameIcon.style.objectFit = 'contain';
+                                frameIcon.src = skill.isLock ? 'images/skill_icons/general/frame_octagon.webp' : 'images/skill_icons/general/frame.webp';
+                                node.appendChild(frameIcon);
+                            } else {
+                                frameIcon.src = skill.isLock ? 'images/skill_icons/general/frame_octagon.webp' : 'images/skill_icons/general/frame.webp';
+                            }
+                            frameIcon.style.display = 'block';
+                         } else {
+                             if (frameIcon) {
+                                 frameIcon.style.display = 'none';
+                             }
+                         }
+                    }
+                }
+            }
+
+            for (const skillId in wilsonSkillsData) {
+                const skill = wilsonSkillsData[skillId];
+                const node = document.createElement('div');
+                node.classList.add('skill-node');
+                node.id = skillId;
+
+                node.style.backgroundImage = `url('${getNodeBackgroundImage(skill, false)}')`;
+                
+                if (!skill.isLock) {
+                     const skillIcon = document.createElement('img');
+                     skillIcon.classList.add('skill-icon');
+                     skillIcon.style.width = '86%';
+                     skillIcon.style.height = '86%';
+                     skillIcon.style.objectFit = 'contain';
+                     skillIcon.style.position = 'absolute';
+                     skillIcon.style.top = '50%';
+                     skillIcon.style.left = '50%';
+                     skillIcon.style.transform = 'translate(-50%, -50%)';
+                     skillIcon.style.zIndex = '2';
+                     skillIcon.src = `images/skill_icons/wilson/${skill.icon}.webp`;
+                     node.appendChild(skillIcon);
+                }
+
+                const frameIcon = document.createElement('img');
+                frameIcon.classList.add('highlight-frame');
+                frameIcon.style.objectFit = 'contain';
+                frameIcon.src = skill.isLock ? 'images/skill_icons/general/frame_octagon.webp' : 'images/skill_icons/general/frame.webp';
+                frameIcon.style.display = 'none';
+                node.appendChild(frameIcon);
+
+                const current_pos_scaling_factor = 1.08 * 1.2;
+
+                let adjustedX = skill.pos[0] * current_pos_scaling_factor;
+                let adjustedY = skill.pos[1] * current_pos_scaling_factor;
+
+                const scaleFactor = 1.2;
+                if (skill.group === 'beard' || skill.group === 'allegiance') {
+                    adjustedX -= (2 * scaleFactor); 
+                }
+                if (skillId === 'wilson_allegiance_shadow') {
+                    adjustedX -= (5 * scaleFactor); 
+                    adjustedY += (12 * scaleFactor); 
+                } else if (skillId === 'wilson_allegiance_lunar') {
+                    adjustedX -= (5 * scaleFactor); 
+                    adjustedX += (3 * scaleFactor); 
+                    adjustedY += (12 * scaleFactor); 
+                } else if (skillId === 'wilson_beard_7') {
+                    adjustedX -= (1 * scaleFactor); 
+                    adjustedY += (1 * scaleFactor); 
+                } else if (skillId === 'wilson_beard_lock_1') {
+                    adjustedX += (2 * scaleFactor); 
+                    adjustedY -= (2 * scaleFactor); 
+                } else if (skillId === 'wilson_allegiance_lock_2' || skillId === 'wilson_allegiance_lock_4') {
+                    adjustedX -= (3 * scaleFactor); 
+                    adjustedY -= (3 * scaleFactor); 
+                } else if (skillId.startsWith('wilson_allegiance_lock_') && !(skillId === 'wilson_allegiance_lock_1')) {
+                    adjustedY -= (3 * scaleFactor); 
+                } else if (skillId === 'wilson_torch_lock_1') {
+                    adjustedX += (4 * scaleFactor); 
+                    adjustedY -= (2 * scaleFactor); 
+                } else if (skillId === 'wilson_torch_7') {
+                    adjustedX += (1 * scaleFactor); 
+                    adjustedY += (1 * scaleFactor); 
+                } else if (skillId === 'wilson_torch_1' || skillId === 'wilson_torch_2' || skillId === 'wilson_torch_3') {
+                    adjustedX += (2 * scaleFactor); 
+                } else if (skillId === 'wilson_beard_4' || skillId === 'wilson_beard_5' || skillId === 'wilson_beard_6') {
+                    adjustedX -= (1.5 * scaleFactor); 
+                } else if (skillId === 'wilson_alchemy_4' || skillId === 'wilson_alchemy_9' || skillId === 'wilson_alchemy_10') {
+                    adjustedX -= (1 * scaleFactor); 
+                }
+                
+                const treeRenderMaxY = 176 * current_pos_scaling_factor; 
+                
+                let webX = adjustedX + xOffset - (nodeWidth / 2);
+                let webY = (treeRenderMaxY - adjustedY) + yOffset - (nodeHeight / 2);
+
+                node.style.left = Math.round(webX) + 'px';
+                node.style.top = Math.round(webY) + 'px';
+                
+                if (skill.lock_open) {
+                    node.classList.add('lock-type');
+                }
+                if (skill.root) {
+                    node.classList.add('root-skill');
+                }
+
+                node.addEventListener('mouseover', () => {
+                    const hoveredSkill = wilsonSkillsData[skillId];
+
+                    if (highlightedSkillId !== null && wilsonSkillsData[highlightedSkillId]?.state === 'unlocked' && skillId !== highlightedSkillId) {
+                        const previouslyHighlightedNode = skillNodes[highlightedSkillId];
+                        if (previouslyHighlightedNode) {
+                             previouslyHighlightedNode.classList.remove('highlighted');
+                             const prevSkillData = wilsonSkillsData[highlightedSkillId];
+                             if (prevSkillData) {
+                                previouslyHighlightedNode.style.backgroundImage = `url('${getNodeBackgroundImage(prevSkillData, false)}')`;
+                                 const prevSkillIcon = previouslyHighlightedNode.querySelector('.skill-icon');
+                                 if (prevSkillIcon) prevSkillIcon.style.display = 'block';
+                                 const prevFrameIcon = previouslyHighlightedNode.querySelector('.highlight-frame');
+                                 if (prevFrameIcon) prevFrameIcon.style.display = 'none';
+                             }
+                        }
+                        highlightedSkillId = null;
+                        skillInfoTitle.textContent = "";
+                        skillInfoTitle.style.marginBottom = '0px';
+                        skillInfoDesc.innerHTML = "Become a seasoned survivor!";
+                        updateLearnButtonVisibility(null);
+                    }
+
+                    
+                    if (skillId === highlightedSkillId) {
+                         if (hoveredSkill && hoveredSkill.isLock) {
+                             skillInfoTitle.textContent = hoveredSkill.state === 'unlocked' ? "PATH UNLOCKED" : "PATH LOCKED";
+                             skillInfoDesc.innerHTML = (hoveredSkill.desc || "No description available.").replace(/\\n/g, '<br>');
+                             skillInfoTitle.style.marginBottom = skillInfoTitle.textContent ? '12px' : '0px';
+                         }
+                        return; 
+                    }
+
+                    if (highlightedSkillId !== null && wilsonSkillsData[highlightedSkillId]?.state !== 'unlocked') {
+                          const hoveredSkill = wilsonSkillsData[skillId];
+                          if (hoveredSkill) {
+                              node.style.backgroundImage = `url('${getNodeBackgroundImage(hoveredSkill, true)}')`;
+                          }
+                        return;
+                    }
+
+                    if (hoveredSkill) {
+                        if (hoveredSkill.isLock) {
+                            skillInfoTitle.textContent = hoveredSkill.state === 'unlocked' ? "PATH UNLOCKED" : "PATH LOCKED";
+                        } else {
+                            skillInfoTitle.textContent = hoveredSkill.title || skillId;
+                        }
+                        skillInfoTitle.style.marginBottom = skillInfoTitle.textContent ? '12px' : '0px';
+                        skillInfoDesc.innerHTML = (hoveredSkill.desc || "No description available.").replace(/\\n/g, '<br>');
+                        updateLearnButtonVisibility(skillId);
+
+                        node.style.backgroundImage = `url('${getNodeBackgroundImage(hoveredSkill, true)}')`;
+                        const skillIcon = node.querySelector('.skill-icon');
+                        if (skillIcon) skillIcon.style.display = 'block';
+                    }
+                });
+
+                 node.addEventListener('mouseout', () => {
+                    const mousedOutSkill = wilsonSkillsData[skillId];
+
+                    if (skillId === highlightedSkillId) {
+                        if (mousedOutSkill) {
+                           node.style.backgroundImage = `url('${getNodeBackgroundImage(mousedOutSkill, false)}')`;
+                           const skillIcon = node.querySelector('.skill-icon');
+                           if (skillIcon) skillIcon.style.display = 'block';
+                        }
+                        return;
+                    }
+
+                    if (highlightedSkillId !== null && wilsonSkillsData[highlightedSkillId]?.state !== 'unlocked') {
+                        if (mousedOutSkill) {
+                            node.style.backgroundImage = `url('${getNodeBackgroundImage(mousedOutSkill, false)}')`;
+                            const skillIcon = node.querySelector('.skill-icon');
+                            if (skillIcon) skillIcon.style.display = 'block';
+                        }
+                       return;
+                    }
+
+
+                     if (mousedOutSkill) {
+                         node.style.backgroundImage = `url('${getNodeBackgroundImage(mousedOutSkill, false)}')`;
+                         const skillIcon = node.querySelector('.skill-icon');
+                         if (skillIcon) skillIcon.style.display = 'block';
+                     }
+                });
+
+                 node.addEventListener('click', () => {
+                    const currentSkillData = wilsonSkillsData[skillId];
+                    if (currentSkillData.isLock) {
+                        highlightedSkillId = skillId;
+                        if (currentSkillData.state === 'unlocked') {
+                            skillInfoTitle.textContent = "PATH UNLOCKED";
+                        } else {
+                            skillInfoTitle.textContent = "PATH LOCKED";
+                        }
+                        skillInfoDesc.innerHTML = (currentSkillData.desc || "No description available.").replace(/\\n/g, '<br>');
+                    } else {
+                        if (skillId === highlightedSkillId) {
+                            if (currentSkillData.state === 'unlocked') {
+                                unlearnSkill(skillId);
+                            } else {
+                                learnSkill(skillId);
+                            }
+                        } else { 
+                            highlightedSkillId = skillId;
+                            skillInfoTitle.textContent = currentSkillData.title || skillId;
+                            skillInfoDesc.innerHTML = (currentSkillData.desc || "No description available.").replace(/\\n/g, '<br>');
+                        }
+                    }
+                    skillInfoTitle.style.marginBottom = skillInfoTitle.textContent ? '12px' : '0px';
+                    renderSkillNodes();
+                    updateLearnButtonVisibility(highlightedSkillId);
+                });
+
+                container.appendChild(node);
+                const finalWebX = Math.round(webX);
+                const finalWebY = Math.round(webY);
+                skillElements[skillId] = { x: finalWebX + nodeWidth / 2, y: finalWebY + nodeHeight / 2, domElement: node };
+                skillNodes[skillId] = node; 
+            }
+
+            for (const skillId in skillNodes) {
+                skillNodes[skillId].addEventListener('contextmenu', (event) => {
+                    event.preventDefault();
+                });
+            }
+
+            for (const skillId in wilsonSkillsData) {
+                const skill = wilsonSkillsData[skillId];
+                const startNode = skillElements[skillId];
+
+                if (skill.connects) {
+                    skill.connects.forEach(connectedSkillId => {
+                        const endNode = skillElements[connectedSkillId];
+                        if (startNode && endNode) {
+                            const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+                            line.setAttribute('x1', startNode.x);
+                            line.setAttribute('y1', startNode.y);
+                            line.setAttribute('x2', endNode.x);
+                            line.setAttribute('y2', endNode.y);
+                            line.setAttribute('stroke', '#999');
+                            line.setAttribute('stroke-width', '2');
+                            svgLines.appendChild(line);
+                        }
+                    });
+                }
+                if (skill.locks) {
+                    skill.locks.forEach(lockingSkillId => {
+                        const endNode = skillElements[skillId]; 
+                        const startNodePrereq = skillElements[lockingSkillId]; 
+                        if (startNodePrereq && endNode) {
+                            const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+                            line.setAttribute('x1', startNodePrereq.x);
+                            line.setAttribute('y1', startNodePrereq.y);
+                            line.setAttribute('x2', endNode.x);
+                            line.setAttribute('y2', endNode.y);
+                            line.setAttribute('stroke', '#cc6666'); 
+                            line.setAttribute('stroke-width', '2');
+                            line.setAttribute('stroke-dasharray', '4 2'); 
+                            svgLines.appendChild(line);
+                        }
+                    });
+                }
+            }
+            
+            resetInsightState(); 
+            skillInfoTitle.textContent = ""; 
+            skillInfoTitle.style.marginBottom = '0px'; 
+            skillInfoDesc.innerHTML = "Become a seasoned survivor!";
+            updateLearnButtonVisibility(null);
+
+            learnSkillButton.addEventListener('click', () => {
+                if (highlightedSkillId && wilsonSkillsData[highlightedSkillId]?.state !== "unlocked" && !learnSkillButton.classList.contains('hidden')) {
+                    learnSkill(highlightedSkillId);
+                }
+            });
+
+            document.addEventListener('keydown', (event) => {
+                if (event.key === ' ' || event.code === 'Space') {
+                    const highlightedSkillData = wilsonSkillsData[highlightedSkillId];
+                    if (highlightedSkillId && highlightedSkillData) {
+                         if (highlightedSkillData.state === 'unlocked' && !highlightedSkillData.isLock) {
+                              event.preventDefault();
+                             unlearnSkill(highlightedSkillId);
+                         } else if (!learnSkillButton.classList.contains('hidden') && learnSkillButton.textContent !== "SKILL MASTERED") {
+                             event.preventDefault(); 
+                            learnSkill(highlightedSkillId);
+                        }
+                    }
+                }
+            });
+
+            function unlearnSkill(skillIdToUnlearn) {
+                const skillToUnlearn = wilsonSkillsData[skillIdToUnlearn];
+
+                if (!skillToUnlearn || skillToUnlearn.state !== 'unlocked' || skillToUnlearn.isLock) {
+                    return;
+                }
+
+                let skillsToUnlearn = new Set();
+                function collectDescendantUnlockedSkills(currentSkillId) {
+                    const currentSkill = wilsonSkillsData[currentSkillId];
+                    if (!currentSkill || currentSkill.state !== 'unlocked' || skillsToUnlearn.has(currentSkillId)) {
+                        if (currentSkill && currentSkill.isLock && currentSkill.state === 'unlocked') {
+                        }
+                         return;
+                    }
+
+                    skillsToUnlearn.add(currentSkillId);
+
+                    for (const otherSkillId in wilsonSkillsData) {
+                        const otherSkill = wilsonSkillsData[otherSkillId];
+                        if (otherSkill.prereqs && otherSkill.prereqs.includes(currentSkillId)) {
+                            collectDescendantUnlockedSkills(otherSkillId);
+                        }
+                    }
+                }
+
+                collectDescendantUnlockedSkills(skillIdToUnlearn);
+
+                const simulatedSkillsState = JSON.parse(JSON.stringify(wilsonSkillsData));
+                for (const id of skillsToUnlearn) {
+                     if (simulatedSkillsState[id]) {
+                        simulatedSkillsState[id].state = 'locked';
+                        if (id === 'wilson_allegiance_shadow' || id === 'wilson_allegiance_lunar') simulatedSkillsState[id].simulatedAllegiance = null;
+                     }
+                 }
+
+                let changedInSimulation;
+                let simulationIterations = 0;
+                do {
+                    changedInSimulation = false;
+                    simulationIterations++;
+                     for (const skillId in simulatedSkillsState) {
+                        const skill = simulatedSkillsState[skillId];
+                        const originalState = skill.state;
+
+                        if (skill.isLock) {
+                            let allPrereqsMetInSim = true;
+                             if (skill.prereqs && skill.prereqs.length > 0) {
+                                for (const prereqId of skill.prereqs) {
+                                    if (!simulatedSkillsState[prereqId] || simulatedSkillsState[prereqId].state !== 'unlocked') {
+                                        allPrereqsMetInSim = false;
+                                        break;
+                                    }
+                                }
+                            }
+
+                            if (skill.requiresGroupSkills) {
+                                 let learnedInGroupSim = 0;
+                                 function checkDependenceOnLock(skillToCheckId, lockToCheckId, visitedInDepCheck) {
+                                      if (visitedInDepCheck.has(skillToCheckId)) return false;
+                                      visitedInDepCheck.add(skillToCheckId);
+
+                                      const skillToCheck = simulatedSkillsState[skillToCheckId];
+                                      if (!skillToCheck) return false;
+
+                                      if (skillToCheck.prereqs) {
+                                           for (const prereqId of skillToCheck.prereqs) {
+                                               if (prereqId === lockToCheckId) return true;
+                                               if (checkDependenceOnLock(prereqId, lockToCheckId, new Set(visitedInDepCheck))) return true;
+                                           }
+                                       }
+                                      return false;
+                                 }
+
+                                 for (const otherSkillId in simulatedSkillsState) {
+                                     const otherSkill = simulatedSkillsState[otherSkillId];
+                                     if (!otherSkill.isLock && otherSkill.state === 'unlocked' && !checkDependenceOnLock(otherSkillId, skillId, new Set())) {
+                                         if (skill.requiresGroupSkills.group === "any" || otherSkill.group === skill.requiresGroupSkills.group) {
+                                             learnedInGroupSim++;
+                                         }
+                                     }
+                                 }
+                                 if (learnedInGroupSim < skill.requiresGroupSkills.count) {
+                                     allPrereqsMetInSim = false;
+                                 }
+                             }
+
+                             let newLockStateSim = 'locked';
+                             let simulatedCurrentAllegiance = null;
+                             for (const id in simulatedSkillsState) {
+                                if ((id === 'wilson_allegiance_shadow' || id === 'wilson_allegiance_lunar') && simulatedSkillsState[id].state === 'unlocked') {
+                                     simulatedCurrentAllegiance = id === 'wilson_allegiance_shadow' ? 'shadow' : 'lunar';
+                                     break;
+                                }
+                            }
+
+                             if (skillId === 'wilson_allegiance_lock_2') {
+                                newLockStateSim = (simulatedCurrentAllegiance === 'lunar') ? 'locked' : (allPrereqsMetInSim ? 'unlocked' : 'locked');
+                            } else if (skillId === 'wilson_allegiance_lock_4') {
+                                newLockStateSim = (simulatedCurrentAllegiance === 'lunar') ? 'locked' : 'unlocked';
+                            } else if (skillId === 'wilson_allegiance_lock_3') {
+                                newLockStateSim = (simulatedCurrentAllegiance === 'shadow') ? 'locked' : (allPrereqsMetInSim ? 'unlocked' : 'locked');
+                            } else if (skillId === 'wilson_allegiance_lock_5') {
+                                newLockStateSim = (simulatedCurrentAllegiance === 'shadow') ? 'locked' : 'unlocked';
+                            } else {
+                                newLockStateSim = allPrereqsMetInSim ? 'unlocked' : 'locked';
+                            }
+                            skill.state = newLockStateSim;
+                            if (originalState !== skill.state) changedInSimulation = true;
+                        }
+                     }
+                 } while (changedInSimulation && simulationIterations < 10);
+
+                 let unlearningBlocked = false;
+
+                for (const lockId in wilsonSkillsData) {
+                    const originalLockState = wilsonSkillsData[lockId];
+                    const simulatedLockState = simulatedSkillsState[lockId];
+
+                    if (originalLockState && originalLockState.isLock && originalLockState.state === 'unlocked' && simulatedLockState && simulatedLockState.state === 'locked') {
+
+                        let dependentSkillExists = false;
+
+                        function checkDependence(skillToCheckId, lockToCheckId, visitedInDepCheck) {
+                             if (visitedInDepCheck.has(skillToCheckId)) return false;
+                             visitedInDepCheck.add(skillToCheckId);
+
+                             const skillToCheck = wilsonSkillsData[skillToCheckId];
+                             if (!skillToCheck) return false;
+
+                             if (skillsToUnlearn.has(skillToCheckId) || skillToCheck.isLock) return false;
+
+                             if (skillToCheck.state === 'unlocked') {
+                                if (skillToCheck.prereqs) {
+                                     for (const prereqId of skillToCheck.prereqs) {
+                                         if (prereqId === lockToCheckId) return true;
+                                         if (checkDependence(prereqId, lockToCheckId, new Set(visitedInDepCheck))) return true;
+                                     }
+                                 }
+                             }
+
+                             return false;
+                        }
+
+                         for (const skillId in wilsonSkillsData) {
+                              if (checkDependence(skillId, lockId, new Set())) {
+                                 dependentSkillExists = true;
+                                 break;
+                              }
+                          }
+
+                         if (dependentSkillExists) {
+                            unlearningBlocked = true;
+                            const skillInfoDesc = document.getElementById('skill-info-desc');
+                            setTimeout(() => {
+                                 if (highlightedSkillId) {
+                                     const currentSkillData = wilsonSkillsData[highlightedSkillId];
+                                     if (currentSkillData.isLock) {
+                                          skillInfoTitle.textContent = currentSkillData.state === 'unlocked' ? "PATH UNLOCKED" : "PATH LOCKED";
+                                     } else {
+                                         skillInfoTitle.textContent = currentSkillData.title || highlightedSkillId;
+                                     }
+                                      skillInfoDesc.innerHTML = (currentSkillData.desc || "No description available.").replace(/\\n/g, '<br>');
+                                     updateLearnButtonVisibility(highlightedSkillId);
+                                 } else {
+                                     skillInfoTitle.textContent = "";
+                                     skillInfoTitle.style.marginBottom = '0px';
+                                     skillInfoDesc.innerHTML = "Become a seasoned survivor!";
+                                     updateLearnButtonVisibility(null);
+                                 }
+                            }, 5000);
+                            break;
+                         }
+                    }
+                }
+
+                 if (unlearningBlocked) {
+                     return;
+                 }
+
+
+                let totalRefund = 0;
+
+                skillsToUnlearn.forEach(id => {
+                     const skill = wilsonSkillsData[id];
+                     if (skill) {
+                        totalRefund += skill.cost;
+                        skill.state = 'locked';
+                        if (id === 'wilson_allegiance_shadow' || id === 'wilson_allegiance_lunar') {
+                            currentAllegiance = null;
+                        }
+                     }
+                });
+
+                spentInsightPoints -= totalRefund;
+                if (spentInsightPoints < 0) spentInsightPoints = 0;
+
+                updateAllSkillStatesAndRender();
+                updateLearnButtonVisibility();
+                updateResetButtonVisibility();
+
+            }
+
+        });
+        
+       const lunarAnimationElement = document.getElementById('lunar-animation');
+       const frameWidth = 782.6;
+       const frameHeight = 624;
+       const numColumns = 10;
+       const numFrames = 100;
+       let currentFrame = 0;
+
+       function updateLunarAnimation() {
+           const col = currentFrame % numColumns;
+           const row = Math.floor(currentFrame / numColumns);
+           const backgroundPositionX = -col * frameWidth;
+           const backgroundPositionY = -row * frameHeight;
+           lunarAnimationElement.style.backgroundPosition = `${backgroundPositionX}px ${backgroundPositionY}px`;
+
+           currentFrame = (currentFrame + 1) % numFrames;
+       }
+
+       const animationInterval = 16;
+       setInterval(updateLunarAnimation, animationInterval);
+
+       const shadowAnimationElement = document.getElementById('shadow-animation');
+       const shadowFrameWidth = 780;
+       const shadowFrameHeight = 580;
+       const shadowNumColumns = 10;
+       const shadowNumFrames = 100;
+       let currentShadowFrame = 0;
+
+       function updateShadowAnimation() {
+           const col = currentShadowFrame % shadowNumColumns;
+           const row = Math.floor(currentShadowFrame / shadowNumColumns);
+           const backgroundPositionX = -col * shadowFrameWidth;
+           const backgroundPositionY = -row * shadowFrameHeight;
+           shadowAnimationElement.style.backgroundPosition = `${backgroundPositionX}px ${backgroundPositionY}px`;
+
+           currentShadowFrame = (currentShadowFrame + 1) % shadowNumFrames;
+       }
+
+       const shadowAnimationInterval = 16;
+       setInterval(updateShadowAnimation, shadowAnimationInterval);
+
+       const skilltreeImg = document.getElementById('skilltree-background-img');
+       const skilltreeCanvas = document.getElementById('skilltree-background-canvas');
+       const skilltreeWrapper = document.getElementById('skilltree-wrapper');
+       const ctx = skilltreeCanvas.getContext('2d');
+
+       let shadowGradientDataURL = null;
+       let lunarGradientDataURL = null;
+
+       function applyGradientToCanvas(targetRed, targetGreen, targetBlue) {
+          ctx.drawImage(skilltreeImg, 0, 0);
+
+          const imageData = ctx.getImageData(0, 0, skilltreeImg.width, skilltreeImg.height);
+          const data = imageData.data;
+
+          for (let i = 0; i < data.length; i += 4) {
+            const r = data[i];
+            const g = data[i + 1];
+            const b = data[i + 2];
+            const a = data[i + 3];
+
+            const threshold = 100;
+            const maxRGB = Math.max(r, g, b);
+
+            let darknessFactor = 0;
+            if (maxRGB <= threshold) {
+                darknessFactor = 1 - (maxRGB / threshold);
+            }
+
+            if (darknessFactor > 0 && a > 0) {
+              const x = (i / 4) % skilltreeImg.width;
+              const y = Math.floor((i / 4) / skilltreeImg.width);
+              const gradientFactor = y / skilltreeImg.height;
+
+              const gradientTargetRed = Math.round(targetRed * gradientFactor);
+              const gradientTargetGreen = Math.round(targetGreen * gradientFactor);
+              const gradientTargetBlue = Math.round(targetBlue * gradientFactor);
+
+              data[i] = Math.round(r * (1 - darknessFactor) + gradientTargetRed * darknessFactor);
+              data[i + 1] = Math.round(g * (1 - darknessFactor) + gradientTargetGreen * darknessFactor);
+              data[i + 2] = Math.round(b * (1 - darknessFactor) + gradientTargetBlue * darknessFactor);
+            }
+          }
+
+          ctx.putImageData(imageData, 0, 0);
+          return skilltreeCanvas.toDataURL();
+       }
+
+       const handleImageLoadAndPreprocess = () => {
+         skilltreeCanvas.width = skilltreeImg.width;
+         skilltreeCanvas.height = skilltreeImg.height;
+         
+         shadowGradientDataURL = applyGradientToCanvas(171, 38, 32);
+
+         lunarGradientDataURL = applyGradientToCanvas(127, 205, 245);
+
+         skilltreeWrapper.style.backgroundImage = `url(${skilltreeImg.src})`;
+         skilltreeWrapper.style.backgroundSize = '100% 100%';
+         skilltreeWrapper.style.backgroundRepeat = 'no-repeat';
+       };
+
+       skilltreeImg.onload = handleImageLoadAndPreprocess;
+
+       if (skilltreeImg.complete) {
+           handleImageLoadAndPreprocess();
+       }
+
+    </script>
+</body>
+</html>

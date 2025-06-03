@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Random Character - Redirecting...</title>
+    <script>
+        // This script will run immediately on page load
+        (function() {
+            // List of character IDs that HAVE skill tree pages and can be redirected to
+            const skillTreeCharacterIds = [
+                "Wilson", "Willow", "Wolfgang", "Wendy", "Woodie", 
+                "Wigfrid", "Winona", "Wortox", "Wormwood", "Wurt", "Walter"
+            ];
+
+            if (skillTreeCharacterIds.length > 0) {
+                const randomIndex = Math.floor(Math.random() * skillTreeCharacterIds.length);
+                const randomCharacterId = skillTreeCharacterIds[randomIndex];
+                // Redirect the current tab to the selected character's page
+                // Using window.location.replace to avoid adding Random.html to history
+                window.location.replace(randomCharacterId + '.html'); 
+            } else {
+                // Fallback if the list is somehow empty
+                document.body.innerHTML = '<p>Error: No characters available for random selection. Please go back to the <a href="index.html">character selection</a>.</p>';
+            }
+        })();
+    </script>
+    <style>
+        body { 
+            font-family: 'Hammerhead Regular', serif; /* Match your site's aesthetic */
+            text-align: center; 
+            padding-top: 50px; 
+            background-color: #2c2521; /* Match your site's background */
+            background-image: url('images/background.png'); /* Match your site's background */
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            color: #e0d4c1; /* Match your site's text color */
+            min-height: 100vh;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        a { color: #f5e5c6; } /* Match link color */
+    </style>
+</head>
+<body>
+    <h1>Redirecting...</h1>
+    <p>You are being redirected to a random character's skill tree.</p>
+    <p>If you are not redirected automatically, please ensure JavaScript is enabled or <a href="index.html">return to the character selection</a>.</p>
+</body>
+</html> 
